@@ -1,0 +1,2 @@
+This example shows how to manage origins and streams events ingest credentials using the MSL Terraform provider. The resources configuration is minimal and focuses on the essential attributes required to create and manage these resources.
+You can apply the configuration using Terraform CLI commands and observe the creation in accordance to dependencies between the resources (Origins -> Streams -> Events / Ingest Credentials). After applying, you can also destroy the resources in reverse order to ensure proper cleanup (Events / Ingest Credentials -> Streams -> Origins).

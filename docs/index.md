@@ -19,7 +19,7 @@ terraform {
   required_providers {
     msl = {
       source  = "harmonicinc-video/msl"
-      version = "~> 1.7"
+      version = "~> 0.1"
     }
   }
 }

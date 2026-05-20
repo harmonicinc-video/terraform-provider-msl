@@ -1,0 +1,1 @@
+This example shows how to create an origin using the MSL Terraform provider. It uses the `msl_origin` resource to create an origin with the specified parameters. The `output` block is used to display the ID of the created origin after the Terraform apply command is executed.

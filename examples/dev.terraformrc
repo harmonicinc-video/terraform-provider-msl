@@ -1,0 +1,27 @@
+# Uses the pre-built binaries from release page, or provider built directly from https://github.com/harmonicinc-video/terraform-provider-msl
+#
+# To use the pre-built provider binary from GitHub:
+#   Download the latest release and extract the provider binary to a local directory (e.g. `/tmp/terraform-provider-msl`),
+#   then update the path in `examples/dev.terraformrc` accordingly.
+#
+# To use or update the provider binary from GitHub:
+#   go install github.com/harmonicinc-video/terraform-provider-msl@main
+# then update the path in `examples/dev.terraformrc` to point to the bin directory of GOPATH (e.g. "/Users/<username>/go/bin").
+#
+# To use local build of the provider (make build or go build),
+# after built, update the path in `examples/dev.terraformrc` to point to binary output directory
+#
+# Usage:
+#   TF_CLI_CONFIG_FILE=../dev.terraformrc terraform plan -out=tfplan
+#
+# NOTE: Do NOT run `terraform init` with this config — dev_overrides bypass the
+# registry entirely and init will fail trying to resolve the provider version.
+# Run plan/apply directly; no init is needed.
+
+provider_installation {
+  dev_overrides {
+    "harmonicinc-video/msl" = "/tmp/terraform-provider-msl"
+  }
+
+  direct {}
+}

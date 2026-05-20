@@ -1,0 +1,1 @@
+This example demonstrates how to list the data sources for origins, streams, events, and ingest credentials using the MSL Terraform provider. The configuration is minimal and focuses on the essential attributes required to retrieve and list these resources.
