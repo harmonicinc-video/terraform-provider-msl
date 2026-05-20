@@ -1,0 +1,7 @@
+api_endpoint  = "<MSL5 endpoint URL>"
+api_token     = "<MSL5 API token>"
+debug_logging = true
+
+# Optional filters — remove or set to null to list all resources
+# contract_id = "0"
+# group_id    = "dummy"

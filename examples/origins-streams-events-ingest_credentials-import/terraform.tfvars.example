@@ -1,0 +1,54 @@
+api_endpoint  = "<API_ENDPOINT>"
+api_token     = "<API_TOKEN>"
+debug_logging = true
+
+origins = {
+  uswestterraformtest = {
+    host_name       = "uswestterraformtest"
+    ingest_location = "US_SEA"
+    contract_id     = "0"
+    cptag           = "0"
+    group_id        = "dummy"
+    shared_keys = [
+      {
+        name      = "key1"
+        key       = "abc123"
+        host_name = "us-sea-uswestterraformtest.dev.mslorigin.nebula.video"
+        enabled   = true
+      }
+    ]
+  }
+}
+
+streams = {
+  uswestterraformtest_hls = {
+    origin_key                 = "uswestterraformtest"
+    format                     = "HLS"
+    description                = "uswestterraformtest stream"
+    ingest_authentication_mode = "DIGEST"
+    allowed_ips                = ["0.0.0.0/0"]
+    archiving = {
+      no_archive = false
+      automatic_purge = {
+        retention_days = 30
+      }
+    }
+  }
+}
+
+events = {
+  uswestterraformtest_event = {
+    stream_key = "uswestterraformtest_hls"
+    event_name = "terraformtest_event"
+  }
+}
+
+ingest_credentials = {
+  encoder_live = {
+    stream_key  = "uswestterraformtest_hls"
+    username    = "encoder_live"
+    password    = "Ch@ngeme123!"
+    algorithm   = "SHA256"
+    description = "Active encoding credential"
+  }
+}
