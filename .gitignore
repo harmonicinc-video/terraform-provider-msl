@@ -1,0 +1,36 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+*.tfplan
+tfplan
+*.tfvars
+!examples/**/*.tfvars.example
+.terraform.lock.hcl
+terraform.rc
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Provider binary
+terraform-provider-msl
+terraform-provider-msl_*
+
+# Go
+*.exe
+*.test
+*.out
+vendor/
+/dist/
+/bin/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

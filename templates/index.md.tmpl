@@ -1,0 +1,28 @@
+---
+page_title: "Provider: MSL5 Live"
+description: |-
+  The MSL5 Live provider manages Akamai Media Services Live (MSL5) resources
+  via the MSL5 REST API, enabling Infrastructure-as-Code workflows for live
+  streaming origins, streams, events, and ingest credentials.
+---
+
+# MSL5 Live Provider
+
+The **MSL5 Live** provider enables Terraform management of [Akamai Media Services Live (MSL5)](https://www.akamai.com/) resources.
+
+## Example Usage
+
+{{tffile "examples/quick-start/main.tf"}}
+
+## Schema
+
+### Required
+
+- `endpoint` (String) Base URL of the MSL5 API.
+- `api_token` (String, Sensitive) Bearer token for authentication.
+
+### Optional
+
+- `request_timeout` (Number) HTTP timeout in seconds. Default: `30`.
+- `max_retries` (Number) Max retries on 5xx/timeout errors. Default: `3`.
+- `debug_logging` (Boolean) Enable debug logging. Default: `false`.

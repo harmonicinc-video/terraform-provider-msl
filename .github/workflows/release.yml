@@ -1,0 +1,44 @@
+# This GitHub action publishes assets for release when a tag is created.
+# You will need to set the GPG_PRIVATE_KEY and PASSPHRASE secrets in your
+# repository settings.
+#
+# You will need to pass the `--batch` flag to `gpg` in your signing step
+# in `goreleaser` to indicate this is being used in a non-interactive mode.
+#
+name: goreleaser
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v5
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+      - name: Get changelog
+        run: |
+          echo 'CHANGELOG_BODY<<EOF' >> $GITHUB_ENV
+          awk '/## ([0-9]+\.?)+/{n++}; n==1; n==2{exit}' CHANGELOG.md >> $GITHUB_ENV
+          echo 'EOF'>> $GITHUB_ENV
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: v2.2.0
+          args: release --clean
+        env:
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANGELOG_BODY: ${{ env.CHANGELOG_BODY }}
