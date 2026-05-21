@@ -25,9 +25,8 @@ terraform {
 }
 
 provider "msl" {
-  endpoint      = "<MSL5 endpoint URL>"     # e.g. "gateway.mslapis.net"
-  api_token     = "<MSL5 API Bearer token>" # MSL5 API Bearer token (sensitive)
-  debug_logging = false                     # optional, default false, set to true to enable debug logging
+  endpoint  = var.api_endpoint # e.g. "gateway.mslapis.net"
+  api_token = var.api_token    # MSL5 API Bearer token (sensitive)
 }
 
 resource "msl_origin" "terraformtest" {
@@ -35,7 +34,8 @@ resource "msl_origin" "terraformtest" {
   ingest_location = "US_SEA"
   contract_id     = "0"
   cptag           = "0"
-  group_id        = "dummy"
+
+  group_id = "dummy"
 }
 
 output "origin_id" { value = msl_origin.terraformtest.id }
