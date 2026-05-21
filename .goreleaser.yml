@@ -8,8 +8,7 @@ before:
     - go mod tidy -diff
     - zip -r docs.zip docs/
 builds:
-- tool: "go1.25.3"
-  env:
+- env:
     # goreleaser does not work with CGO, it could also complicate
     # usage by users in CI/CD systems like Terraform Cloud where
     # they are unable to install libraries.
