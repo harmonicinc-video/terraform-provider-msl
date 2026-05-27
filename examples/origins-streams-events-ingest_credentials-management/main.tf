@@ -54,5 +54,5 @@ resource "msl_ingest_credential" "managed" {
   username    = "encoder_live"
   password    = "Ch@ngeme123!"
   algorithm   = "SHA256"
-  description = "Active encoding crediential for ${msl_stream.terraformtest.id}"
+  description = "Active encoding credential for ${msl_stream.terraformtest.id}"
 }
