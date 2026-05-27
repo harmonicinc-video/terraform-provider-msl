@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/harmonicinc-video/terraform-provider-msl/internal/models"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -458,37 +460,22 @@ func TestMapOriginToState_ZeroTimesNotSet(t *testing.T) {
 	}
 }
 
-// ---- updated_at preservation during update ----
+// ---- schema validation ----
 
-// TestOriginUpdate_PreservesUpdatedAt verifies the save/restore pattern in the
-// Update function: the plan value of updated_at (kept by UseStateForUnknown)
-// must be restored after mapOriginToState so that plan == state and Terraform
-// does not raise "inconsistent result after apply".
-func TestOriginUpdate_PreservesUpdatedAt(t *testing.T) {
-	oldUpdatedAt := "2024-01-01T10:00:00Z"
-	plan := originResourceModel{
-		UpdatedAt: types.StringValue(oldUpdatedAt),
-	}
+func TestOriginSchema_UpdatedAt_NoUseStateForUnknown(t *testing.T) {
+	r := &originResource{}
+	var resp resource.SchemaResponse
+	r.Schema(context.Background(), resource.SchemaRequest{}, &resp)
 
-	// Simulate what the API returns: a later timestamp.
-	latestTime := time.Date(2024, 2, 1, 12, 0, 0, 0, time.UTC)
-	apiOrigin := &models.Origin{
-		ID:        "o-1",
-		UpdatedAt: latestTime,
+	rawAttr, ok := resp.Schema.Attributes["updated_at"]
+	if !ok {
+		t.Fatal("updated_at not found in schema")
 	}
-
-	// Replicate the save/restore pattern used in Update().
-	savedUpdatedAt := plan.UpdatedAt
-	diags := mapOriginToState(context.Background(), apiOrigin, &plan)
-	if diags.HasError() {
-		t.Fatalf("mapOriginToState() returned errors: %v", diags)
+	strAttr, ok := rawAttr.(schema.StringAttribute)
+	if !ok {
+		t.Fatal("updated_at is not a schema.StringAttribute")
 	}
-	if plan.UpdatedAt.ValueString() == oldUpdatedAt {
-		t.Fatal("mapOriginToState should have overwritten UpdatedAt with the API value")
-	}
-	plan.UpdatedAt = savedUpdatedAt // restore
-
-	if plan.UpdatedAt.ValueString() != oldUpdatedAt {
-		t.Errorf("UpdatedAt after restore = %q, want %q (plan value)", plan.UpdatedAt.ValueString(), oldUpdatedAt)
+	if len(strAttr.PlanModifiers) != 0 {
+		t.Errorf("updated_at must have no plan modifiers (got %d); UseStateForUnknown causes spurious drift after updates", len(strAttr.PlanModifiers))
 	}
 }

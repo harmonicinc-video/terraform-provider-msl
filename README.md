@@ -104,6 +104,10 @@ Under Repository Root:
 $ cd examples/quick-start
 $ cp terraform.tfvars.example terraform.tfvars
 # edit terraform.tfvars with real values
+# -- OR -- set variables via TF_VAR_ environment variables:
+# export TF_VAR_api_token="<your-api-token>"
+# Note: terraform.tfvars takes precedence over TF_VAR_ env vars. Remove a
+# variable from terraform.tfvars for the corresponding env var to take effect.
 
 $ TF_CLI_CONFIG_FILE=../dev.terraformrc terraform refresh
 
