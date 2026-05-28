@@ -270,9 +270,6 @@ func (r *originResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 			"updated_at": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: "RFC3339 timestamp of the last update.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
 			},
 			"created_by": schema.StringAttribute{
 				Computed:            true,
@@ -435,16 +432,10 @@ func (r *originResource) Update(ctx context.Context, req resource.UpdateRequest,
 		return
 	}
 
-	// updated_at is set by the server on every write. UseStateForUnknown() locked the
-	// old value in the plan; returning the new API value would trigger Terraform's
-	// "inconsistent result after apply" check. Preserve the plan value here — the
-	// real new timestamp is refreshed by Read on the next terraform plan.
-	savedUpdatedAt := plan.UpdatedAt
 	resp.Diagnostics.Append(mapOriginToState(ctx, origin, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	plan.UpdatedAt = savedUpdatedAt
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }

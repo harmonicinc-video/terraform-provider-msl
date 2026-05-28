@@ -1141,36 +1141,20 @@ func TestStreamSchema_PlaylistDuration_ValidatorBehavior(t *testing.T) {
 	}
 }
 
-// TestStreamUpdate_PreservesUpdatedAt verifies the save/restore pattern in the
-// Update function: the plan value of updated_at (kept by UseStateForUnknown)
-// must be restored after mapStreamToState so that plan == state and Terraform
-// does not raise "inconsistent result after apply".
-func TestStreamUpdate_PreservesUpdatedAt(t *testing.T) {
-	oldUpdatedAt := "2024-01-01T10:00:00Z"
-	plan := streamResourceModel{
-		UpdatedAt: types.StringValue(oldUpdatedAt),
-	}
+func TestStreamSchema_UpdatedAt_NoUseStateForUnknown(t *testing.T) {
+	r := &streamResource{}
+	var resp resource.SchemaResponse
+	r.Schema(context.Background(), resource.SchemaRequest{}, &resp)
 
-	// Simulate what the API returns: a later timestamp.
-	latestTime := time.Date(2024, 2, 1, 12, 0, 0, 0, time.UTC)
-	apiStream := &models.Stream{
-		ID:        "s-1",
-		UpdatedAt: latestTime,
-		Archiving: &models.Archiving{NoArchive: true},
+	rawAttr, ok := resp.Schema.Attributes["updated_at"]
+	if !ok {
+		t.Fatal("updated_at not found in schema")
 	}
-
-	// Replicate the save/restore pattern used in Update().
-	savedUpdatedAt := plan.UpdatedAt
-	diags := mapStreamToState(context.Background(), apiStream, &plan)
-	if diags.HasError() {
-		t.Fatalf("mapStreamToState() returned errors: %v", diags)
+	strAttr, ok := rawAttr.(schema.StringAttribute)
+	if !ok {
+		t.Fatal("updated_at is not a schema.StringAttribute")
 	}
-	if plan.UpdatedAt.ValueString() == oldUpdatedAt {
-		t.Fatal("mapStreamToState should have overwritten UpdatedAt with the API value")
-	}
-	plan.UpdatedAt = savedUpdatedAt // restore
-
-	if plan.UpdatedAt.ValueString() != oldUpdatedAt {
-		t.Errorf("UpdatedAt after restore = %q, want %q (plan value)", plan.UpdatedAt.ValueString(), oldUpdatedAt)
+	if len(strAttr.PlanModifiers) != 0 {
+		t.Errorf("updated_at must have no plan modifiers (got %d); UseStateForUnknown causes spurious drift after updates", len(strAttr.PlanModifiers))
 	}
 }
