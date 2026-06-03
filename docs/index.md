@@ -1,14 +1,14 @@
 ---
 page_title: "Provider: MSL5 Live"
 description: |-
-  The MSL5 Live provider manages Akamai Media Services Live (MSL5) resources
-  via the MSL5 REST API, enabling Infrastructure-as-Code workflows for live
+  The MSL5 Live provider manages Akamai Media Services Live (MSL5) Powered by Harmonic
+  resources via the MSL5 REST API, enabling Infrastructure-as-Code workflows for live
   streaming origins, streams, events, and ingest credentials.
 ---
 
 # MSL5 Live Provider
 
-The **MSL5 Live** provider enables Terraform management of [Akamai Media Services Live (MSL5)](https://www.akamai.com/) resources.
+The **MSL5 Live** provider enables Terraform management of [Akamai Media Services Live (MSL5) Powered by Harmonic](https://techdocs.akamai.com/msl5-harmonic/docs/welcome-to-msl5) resources.
 
 ## Example Usage
 
