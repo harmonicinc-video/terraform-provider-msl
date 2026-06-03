@@ -46,7 +46,7 @@ Archive:  terraform-provider-msl_0.1.0_darwin_arm64.tar.gz
 
 ### 2. Configure the dev override
 
-In `examples/dev.terraformrc`, adjust the path to point to directory containing the provider binary (e.g. `/tmp/terraform-provider-msl`).
+In [`examples/dev.terraformrc`](examples/dev.terraformrc), adjust the path to point to the directory containing the provider binary (e.g. `/tmp/terraform-provider-msl`).
 
 ```hcl
 provider_installation {
@@ -57,7 +57,7 @@ provider_installation {
 }
 ```
 
-### 3. Configure the provider and resources
+### 3. Configure the provider
 
 Create a Terraform configuration (main.tf) that references the provider.
 
@@ -79,7 +79,7 @@ provider "msl" {
 
 See [`examples/quick-start/main.tf`](examples/quick-start/main.tf) for a complete working example.
 
-### 4. Manage an Origin
+### 4. Manage an Origin resource
 
 Defines your desired MSL5 resources. This will create an Origin with the specified properties during `terraform apply`. Adjust the properties as needed.
 
