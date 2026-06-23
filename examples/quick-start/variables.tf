@@ -9,5 +9,6 @@ variable "api_endpoint" {
 variable "api_token" {
   type        = string
   sensitive   = true
+  ephemeral   = true
   description = "Bearer token for MSL5 API authentication."
 }
