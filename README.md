@@ -27,7 +27,7 @@ We will further update the instruction when the provider is registered.
 ## Secrets & State File Security
 
 - Always use a secure remote state backend (Terraform Cloud, S3 with encryption + access controls, etc.)
-- Always treat the state file as a secret as sensitive fields (including password of ingest credentials and secret key of stream g2o auth) can be stored in the state file.
+- Always treat the state file as a secret as sensitive fields (including password of ingest credentials, secret key of stream g2o auth and key of origin shared_keys) can be stored in the state file.
 - Never store API token / credentials in terraform.tfvars or any other unprotected files. Use environment variables or a secrets manager instead.
 - Never use local state in production environments.
 
