@@ -2,6 +2,7 @@ TEST ?= $$(go list ./...)
 PKG_NAME = msl
 
 GOLANGCI_LINT_VERSION = v2.6.1
+TFPLUGINDOCS_VERSION = v0.25.0
 
 # Local provider install parameters
 # Can be overridden: make version=5.1.0 install
@@ -22,12 +23,29 @@ GOMODTIDY = $(GOCMD) mod tidy
 M = $(shell echo ">")
 
 GOLANGCILINT = $(BIN)/golangci-lint
-$(BIN)/golangci-lint: ; $(info $(M) Installing golangci-lint...) @
-	$Q curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(BIN) $(GOLANGCI_LINT_VERSION)
+# Requires: go (for go env GOOS/GOARCH), curl, tar, and sha256sum or shasum.
+$(BIN)/golangci-lint: | $(BIN) ; $(info $(M) Installing golangci-lint $(GOLANGCI_LINT_VERSION)...) @
+	$Q set -e; \
+	_OS=$$(go env GOOS); \
+	_ARCH=$$(go env GOARCH); \
+	_VERSION="$(GOLANGCI_LINT_VERSION)"; _VERSION="$${_VERSION#v}"; \
+	_TARBALL="golangci-lint-$${_VERSION}-$${_OS}-$${_ARCH}.tar.gz"; \
+	_BASE="https://github.com/golangci/golangci-lint/releases/download/$(GOLANGCI_LINT_VERSION)"; \
+	_TMP=$$(mktemp -d 2>/dev/null || { _D="$${TMPDIR:-/tmp}/golangci-lint-install.$$"; mkdir -p "$${_D}" && echo "$${_D}"; }); \
+	curl -sSfL "$${_BASE}/$${_TARBALL}" -o "$${_TMP}/$${_TARBALL}"; \
+	curl -sSfL "$${_BASE}/golangci-lint-$${_VERSION}-checksums.txt" -o "$${_TMP}/checksums.txt"; \
+	cd "$${_TMP}"; \
+	_CHECKSUM_LINES=$$(grep -cF "  $${_TARBALL}" checksums.txt 2>/dev/null || true); \
+	[ "$${_CHECKSUM_LINES}" -eq 1 ] || { printf 'Error: expected exactly 1 checksum line for %s, got %s\n' "$${_TARBALL}" "$${_CHECKSUM_LINES}" >&2; exit 1; }; \
+	grep -F "  $${_TARBALL}" checksums.txt | \
+		if command -v sha256sum >/dev/null 2>&1; then sha256sum -c -; else shasum -a 256 -c -; fi; \
+	tar -xzf "$${_TMP}/$${_TARBALL}" -C "$(BIN)" --strip-components=1 \
+		"golangci-lint-$${_VERSION}-$${_OS}-$${_ARCH}/golangci-lint"; \
+	rm -rf "$${_TMP}"
 
 TFPLUGINDOCS = $(BIN)/tfplugindocs
-$(BIN)/tfplugindocs: ; $(info $(M) Installing tfplugindocs...) @
-	$Q GOBIN=$(BIN) go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@latest
+$(BIN)/tfplugindocs: | $(BIN) ; $(info $(M) Installing tfplugindocs $(TFPLUGINDOCS_VERSION)...) @
+	$Q GOBIN=$(BIN) go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@$(TFPLUGINDOCS_VERSION)
 
 $(BIN):
 	@mkdir -p $@
