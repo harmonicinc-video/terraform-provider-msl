@@ -113,6 +113,9 @@ func (m hostNameFQDNModifier) PlanModifyString(ctx context.Context, req planmodi
 	}
 }
 
+// ingestZoneRegex matches REGION_ZONE with an optional numeric suffix (e.g. US_ORD, DE_FRA_2).
+var ingestZoneRegex = regexp.MustCompile(`^[A-Z]{2,3}_[A-Z]{2,5}(_[0-9]+)?$`)
+
 // Ensure originResource implements required interfaces.
 var _ resource.Resource = &originResource{}
 var _ resource.ResourceWithImportState = &originResource{}
@@ -199,12 +202,12 @@ func (r *originResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 			},
 			"ingest_location": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "Primary ingest zone in `REGION_ZONE` format (e.g. `US_ORD`, `US_SEA`, `GB_LON`). Must be non-empty. Immutable: can only be set during resource creation.",
+				MarkdownDescription: "Primary ingest zone in `REGION_ZONE` format (e.g. `US_SEA`, `GB_LON`, `DE_FRA_2`). Must be non-empty. Immutable: can only be set during resource creation.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.RegexMatches(
-						regexp.MustCompile(`^[A-Z]{2,3}_[A-Z]{2,5}$`),
-						"must be a valid ingest zone (e.g. US_ORD, US_SEA, GB_LON)",
+						ingestZoneRegex,
+						"must be a valid ingest zone (e.g. US_SEA, GB_LON, DE_FRA_2)",
 					),
 				},
 				PlanModifiers: []planmodifier.String{
@@ -214,12 +217,12 @@ func (r *originResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 			"backup_ingest_location": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Optional backup ingest zone in `REGION_ZONE` format (e.g. `US_SEA`, `GB_LON`). Must differ from `ingest_location`. Immutable: can only be set during resource creation.",
+				MarkdownDescription: "Optional backup ingest zone in `REGION_ZONE` format (e.g. `US_SEA`, `GB_LON`, `DE_FRA_2`). Must differ from `ingest_location`. Immutable: can only be set during resource creation.",
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 					stringvalidator.RegexMatches(
-						regexp.MustCompile(`^[A-Z]{2,3}_[A-Z]{2,5}$`),
-						"must be a valid ingest zone (e.g. US_ORD, US_SEA, GB_LON)",
+						ingestZoneRegex,
+						"must be a valid ingest zone (e.g. US_SEA, GB_LON, DE_FRA_2)",
 					),
 				},
 				PlanModifiers: []planmodifier.String{

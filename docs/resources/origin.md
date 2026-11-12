@@ -19,11 +19,11 @@ Manages an MSL5 **Origin** resource (`/api/v1/origins`). Origins define the inge
 - `cptag` (String) CP code tag. Immutable: can only be set during resource creation.
 - `group_id` (String) Group identifier for the origin. Updatable in-place.
 - `host_name` (String) Unique hostname identifier for this origin. Must be non-empty and unique across the system. Immutable: can only be set during resource creation.
-- `ingest_location` (String) Primary ingest zone in `REGION_ZONE` format (e.g. `US_ORD`, `US_SEA`, `GB_LON`). Must be non-empty. Immutable: can only be set during resource creation.
+- `ingest_location` (String) Primary ingest zone in `REGION_ZONE` format (e.g. `US_SEA`, `GB_LON`, `DE_FRA_2`). Must be non-empty. Immutable: can only be set during resource creation.
 
 ### Optional
 
-- `backup_ingest_location` (String) Optional backup ingest zone in `REGION_ZONE` format (e.g. `US_SEA`, `GB_LON`). Must differ from `ingest_location`. Immutable: can only be set during resource creation.
+- `backup_ingest_location` (String) Optional backup ingest zone in `REGION_ZONE` format (e.g. `US_SEA`, `GB_LON`, `DE_FRA_2`). Must differ from `ingest_location`. Immutable: can only be set during resource creation.
 - `shared_keys` (Block List) Up to 10 shared keys for token-authenticated ingest. (see [below for nested schema](#nestedblock--shared_keys))
 
 ### Read-Only
