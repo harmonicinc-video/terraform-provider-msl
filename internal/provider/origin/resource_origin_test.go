@@ -2,7 +2,6 @@ package origin
 
 import (
 	"context"
-	"regexp"
 	"testing"
 	"time"
 
@@ -303,14 +302,10 @@ func TestMapOriginToState_SetsBackupHostNameWhenNull(t *testing.T) {
 
 // ---- ingest location zone format regex ----
 
-// zoneRegex mirrors the pattern used in the schema validators for ingest_location
-// and backup_ingest_location.
-var zoneRegex = regexp.MustCompile(`^[A-Z]{2,3}_[A-Z]{2,5}$`)
-
 func TestIngestLocationZoneFormat_ValidZones(t *testing.T) {
-	valid := []string{"US_ORD", "US_SEA", "GB_LON", "EU_LON", "AP_TYO", "US_EAST"}
+	valid := []string{"US_ORD", "US_SEA", "GB_LON", "EU_LON", "AP_TYO", "US_EAST", "DE_FRA_2", "US_SEA_10"}
 	for _, z := range valid {
-		if !zoneRegex.MatchString(z) {
+		if !ingestZoneRegex.MatchString(z) {
 			t.Errorf("zone %q should be valid but did not match regex", z)
 		}
 	}
@@ -327,9 +322,12 @@ func TestIngestLocationZoneFormat_InvalidZones(t *testing.T) {
 		"US_TOOLONG",  // zone part too long (>5)
 		"TOOLONG_ORD", // region part too long (>3)
 		"US_O R D",    // spaces
+		"DE_FRA_",     // empty numeric suffix
+		"DE_FRA_X",    // non-numeric suffix
+		"DE_FRA_2_3",  // multiple suffixes
 	}
 	for _, z := range invalid {
-		if zoneRegex.MatchString(z) {
+		if ingestZoneRegex.MatchString(z) {
 			t.Errorf("zone %q should be invalid but matched regex", z)
 		}
 	}
